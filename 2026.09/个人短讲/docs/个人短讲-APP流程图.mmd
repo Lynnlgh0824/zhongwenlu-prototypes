@@ -1,0 +1,28 @@
+flowchart TD
+    A[学习首页] --> B[个人短讲入口] --> C[选择科目/年级/语种]
+    C --> D{选择难度}
+    D -->|初级| E[初级：无模式/无 AI]
+    D -->|中级| F[中级：仅练习模式]
+    D -->|高级| G{练习 or 评估}
+    E --> H[查看题目/提纲]
+    F --> H
+    G --> H
+    H --> I[开始朗读]
+    I --> J[保存第一次朗读原始稿]
+    J --> K{使用模式}
+    K -->|练习| L[文字稿编辑]
+    L --> M[AI 润色]
+    M --> N[保存版本]
+    N --> O[AI 朗读示范]
+    O --> P[基于润色稿评分]
+    K -->|评估| Q[直接生成评分]
+    P --> R[报告与历史版本]
+    Q --> R
+    R --> S[查看建议/再次练习]
+    S --> H
+    classDef existing fill:#F3F4F6,stroke:#9CA3AF,color:#374151
+    classDef changed fill:#FEF3C7,stroke:#F59E0B,color:#92400E,stroke-width:2px
+    classDef risk fill:#FEE2E2,stroke:#DC2626,color:#991B1B,stroke-width:2px
+    class A,B,H,I,R,S existing
+    class C,D,E,F,G,J,K,L,M,N,O,P,Q changed
+    class E risk
