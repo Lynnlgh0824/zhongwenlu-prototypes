@@ -1,4 +1,17 @@
+# IDE / OS
+.vscode/
+.idea/
 .DS_Store
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Build / deps
 node_modules/
 dist/
-*.log
+build/
+
+# 部署 vendor（不通过 git 分发，可走单独 release）
