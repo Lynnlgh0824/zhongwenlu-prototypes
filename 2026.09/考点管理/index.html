@@ -11,6 +11,11 @@
 <link rel="stylesheet" href="./vendor/antd.min.css">
 <script src="./vendor/antd.min.js"></script>
 <style>
+  .kaodian-drawer-actions {
+    position: absolute; bottom: 0; left: 0; right: 0; z-index: 10;
+    display: flex; justify-content: flex-end; gap: 8px;
+    padding: 12px 24px; background: #fff; border-top: 1px solid #f0f0f0;
+  }
   /* ============== 基础 ============== */
   * { box-sizing: border-box; }
   html, body, #app { margin: 0; padding: 0; height: 100%; }
@@ -282,13 +287,36 @@
   }
   .kd-pop .pop-ft .count { color: #6b7280; font-size: 12px; }
 </style>
+<style>
+/* 添加试题：沿用原系统布局，红色区域标识考点新增需求。 */
+.qe-mask{position:fixed;inset:0;background:#0006;z-index:1000;display:flex;align-items:center;justify-content:center}
+.qe-dialog{width:900px;max-width:96vw;height:94vh;background:white;display:flex;flex-direction:column;color:#333;font-size:13px;box-shadow:0 12px 48px #0003}
+.qe-head{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #eee;flex-shrink:0}
+.qe-head button{border:0;background:none;color:#999;font-size:20px;cursor:pointer}
+.qe-body{padding:20px;overflow:auto;flex:1;min-height:0}
+.qe-tabs{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap}
+.qe-dialog button{cursor:pointer}.qe-tabs button{padding:7px 13px;border:0;background:#f5f5f5;color:#777;border-radius:2px}.qe-tabs button.active{background:#229ed0;color:white}
+.qe-meta{display:grid;grid-template-columns:2fr 1.6fr .7fr .7fr;gap:24px;margin-bottom:18px}
+.qe-dialog label.qe-label{display:block;font-size:15px;font-weight:600;margin-bottom:10px}
+.qe-dialog input:not([type=checkbox]):not([type=radio]):not([type=file]),.qe-dialog textarea,.qe-dialog select{border:1px solid #d9d9d9;border-radius:2px;padding:5px 9px;min-width:0;font:inherit;color:#666;background:white;box-sizing:border-box}
+.qe-dialog textarea{resize:vertical;height:29px;width:100%}.qe-dialog input::placeholder,.qe-dialog textarea::placeholder{color:#bbb;font-size:12px}
+.qe-meta select{width:100%}.qe-inline{display:flex;gap:6px;align-items:center}.qe-inline select{flex:1;min-width:0}.qe-inline input{width:54px}
+.qe-new{border:1px dashed #ff7875;background:#fff8f7;padding:12px;margin-bottom:20px}.qe-new label{color:#cf1322}.qe-badge{font-size:10px;color:white;background:#ff4d4f;padding:2px 5px;margin-right:6px;border-radius:3px}.qe-note{font-size:12px;color:#cf1322;margin:8px 0 0;line-height:1.7}
+.qe-section{margin-bottom:24px}.qe-text{width:59%;min-width:320px}.qe-titleline{display:flex;gap:7px;align-items:start}.qe-titleline textarea{flex:1}
+.qe-primary{background:#229ed0!important;border:1px solid #229ed0!important;color:#fff!important;padding:5px 12px;border-radius:2px;white-space:nowrap}.qe-plain{background:#fff;border:1px solid #d9d9d9;color:#888;padding:5px 12px;border-radius:2px}
+.qe-upload{display:flex;flex-direction:column;align-items:center;justify-content:center;width:170px;height:84px;border:1px dashed #ddd;background:#fafafa;margin:8px 0;cursor:pointer}.qe-upload b{font-size:32px;color:#40a9ff;font-weight:400}.qe-upload input{display:none}.qe-tts{width:170px;background:#268aff!important;border-color:#268aff!important}.qe-toggle{font-size:12px;color:#888;display:inline-flex;align-items:center;gap:6px;margin-left:14px}.qe-toggle input{appearance:none;width:32px;height:17px;background:#ccc;border-radius:12px;position:relative;cursor:pointer}.qe-toggle input:before{content:'';position:absolute;background:#fff;width:13px;height:13px;left:2px;top:2px;border-radius:50%}.qe-toggle input:checked{background:#229ed0}.qe-toggle input:checked:before{left:17px}
+.qe-stem{display:flex;justify-content:space-between;gap:20px}.qe-score{display:flex;gap:12px;color:#888;font-size:12px}.qe-score input[type=number]{width:72px}.qe-presets{display:flex;flex-direction:column;gap:5px}.qe-image{width:88px;height:88px;color:#888}.qe-image b{font-size:20px;color:#888}
+.qe-optbar{display:flex;align-items:center;margin-bottom:8px}.qe-optbar .qe-label{margin:0!important}.qe-optbar button{margin-left:auto}.qe-options{border-collapse:collapse;width:100%;font-size:12px;color:#777}.qe-options td,.qe-options th{border:1px solid #ccc;padding:7px;text-align:center;font-weight:400}.qe-options textarea{border:0;padding:3px;height:34px}.qe-options .qe-opttext{display:flex}.qe-options .qe-opttext textarea{width:46%;border-right:1px dashed #ddd}.qe-options .qe-opttext button{border:0;background:#fafafa;width:32px;color:#888}
+.qe-footer{display:flex;justify-content:flex-end;gap:8px;padding:12px 20px;border-top:1px solid #eee;flex-shrink:0;background:#fff}
+@media(max-width:700px){.qe-meta{grid-template-columns:1fr 1fr;gap:14px}.qe-text{min-width:0;width:74%}.qe-score{gap:4px}.qe-dialog{max-width:100vw;width:100vw;height:100vh}.qe-body{padding:14px}}
+</style>
 </head>
 <body>
 <div id="app" :class="{'app-mode': currentSurface === 'app'}">
 
   <!-- ============== 顶栏 ============== -->
   <div class="topbar" :class="{'app-mode-bar': currentSurface === 'app'}">
-    <div class="logo"><i>中</i>中文路 · 运营后台</div>
+    <div class="logo"><i>中</i>考点管理</div>
     <div class="bread">
       在线试题管理 /
       <span class="crumb-cur">{{ currentView === 'kaodian' ? '考点管理' : '港澳题库' }}</span>
@@ -407,7 +435,7 @@
           </div>
           <a-table
             :columns="tikuCols"
-            :data-source="tikuList"
+            :data-source="filteredTikuList"
             :pagination="false"
             row-key="id"
             size="small"
@@ -435,57 +463,31 @@
             </template>
           </a-table>
           <div class="pager-row">
-            <span class="pager-info">共 {{ tikuList.length }} 条</span>
+            <span class="pager-info">共 {{ filteredTikuList.length }} 条</span>
             <a-pagination
-              :current="1" :total="tikuList.length" :page-size="10"
+              :current="1" :total="filteredTikuList.length" :page-size="10"
               :show-size-changer="true" :page-size-options="['10 条/页','20 条/页']"
               size="small"
             ></a-pagination>
           </div>
         </div>
 
-        <!-- 港澳题库 · 编辑弹窗 -->
-        <a-drawer
-              v-model:visible="tikuEditVisible"
-          :title="tikuEditing ? '编辑试题' : '新增试题'"
-          :width="720"
-          :footer-style="{textAlign:'right'}"
-        >
-          <div class="form-row">
-            <div class="field"><label>标题</label><a-input v-model:value="tikuForm.title" placeholder="如：普通话声调练习" ></a-input></div>
-            <div class="field"><label>题型</label>
-              <a-select v-model:value="tikuForm.qtype" :options="qTypeOpts" placeholder="请选择" ></a-select>
-            </div>
-            <div class="field"><label>序号</label><a-input v-model:value="tikuForm.serial" ></a-input></div>
-            <div class="field"><label>适用范围</label>
-              <a-select v-model:value="tikuForm.scope" :options="scopeOpts" placeholder="请选择" ></a-select>
-            </div>
-            <div class="field new-field" style="grid-column: span 2;">
-              <label>考点</label>
-              <a-select v-model:value="kdEditValues" mode="multiple" show-search option-filter-prop="label"
-                :options="kdOptions" placeholder="选择考点（可多选）" ></a-select>
-              <div class="kd-stat">
-                <span>已选考点：<span class="num">{{ kdEditSel.size }}</span> 个</span>
-                <span class="muted">· 题目数由后端聚合，此处仅维护映射关系</span>
-              </div>
-            </div>
-            <div class="field"><label>试题类型</label>
-              <a-select v-model:value="tikuForm.qcat" :options="qCatOpts" placeholder="请选择" ></a-select>
-            </div>
-            <div class="field"><label>审核状态</label>
-              <a-select v-model:value="tikuForm.audit" :options="auditOpts" placeholder="请选择" ></a-select>
-            </div>
-            <div class="field" style="grid-column: span 4;">
-              <label>题干内容</label>
-              <a-textarea v-model:value="tikuForm.content" :rows="4" placeholder="请输入题目内容..." ></a-textarea>
-            </div>
-          </div>
-
-          <template #footer>
-            <a-button @click="tikuEditVisible = false">取消</a-button>
-            <a-button type="primary" @click="saveTiku">保存</a-button>
-          </template>
-        </a-drawer>
+<div v-if="tikuEditVisible" class="qe-mask">
+<div class="qe-dialog" role="dialog" aria-modal="true" aria-label="添加试题">
+<div class="qe-head"><span>添加试题</span><button @click="tikuEditVisible = false" aria-label="关闭添加试题">×</button></div>
+<div class="qe-body"><div class="qe-tabs"><button type="button" :class="{active: tikuForm.qtype === '单选题'}" @click="tikuForm.qtype = '单选题'">单选题</button><button type="button" :class="{active: tikuForm.qtype === '多选题'}" @click="tikuForm.qtype = '多选题'">多选题</button><button type="button" :class="{active: tikuForm.qtype === '选词组句'}" @click="tikuForm.qtype = '选词组句'">选词组句</button><button type="button" :class="{active: tikuForm.qtype === '排句成段'}" @click="tikuForm.qtype = '排句成段'">排句成段</button><button type="button" :class="{active: tikuForm.qtype === '完形填空'}" @click="tikuForm.qtype = '完形填空'">完形填空</button><button type="button" :class="{active: tikuForm.qtype === '选词填空'}" @click="tikuForm.qtype = '选词填空'">选词填空</button></div>
+<div class="qe-meta">
+<div><label class="qe-label">适用范围</label><div class="qe-inline"><select v-model="tikuForm.scope"><option value="">请选择</option><option>香港学校/P1</option><option>香港学校/P2</option><option>香港学校/P3</option></select><input placeholder="编号" v-model="tikuForm.serial"></div></div>
+<div><label class="qe-label">标签</label><select><option>请选择标签</option><option>拼音</option><option>词汇</option></select></div>
+<div><label class="qe-label">试题类型</label><select v-model="tikuForm.qcat"><option>拼音</option><option>词汇</option><option>语法</option></select></div>
+<div><label class="qe-label">审核状态</label><select v-model="tikuForm.audit"><option>审核通过</option><option>待审核</option></select></div></div>
+<div class="qe-new"><label class="qe-label"><span class="qe-badge">NEW</span>考点</label><a-select v-model:value="kdEditValues" mode="multiple" show-search option-filter-prop="label" :options="kdOptions" placeholder="选择考点（可多选）" style="width:100%"></a-select><p class="qe-note">新增需求：支持搜索、多选考点；与标签独立配置。确定后保存题目与考点的关联，列表展示所选考点，并支持按考点筛选。取消不保存本次修改。</p></div>
+<section class="qe-section"><label class="qe-label">试题标题</label><div class="qe-text"><div class="qe-titleline"><textarea v-model="tikuForm.title" maxlength="2000" placeholder="请输入标题内容(限制2000字符)"></textarea><button class="qe-primary" type="button">新增小题</button></div><textarea placeholder="请输入语音原文"></textarea></div>
+<label class="qe-upload"><b>↥</b>上传整题音频<input type="file" accept="audio/*"></label><button class="qe-primary qe-tts" type="button">♬ 文字转音频</button><label class="qe-toggle">是否重复播放<input type="checkbox"></label></section>
+<section class="qe-section"><label class="qe-label">试题题干</label><div class="qe-stem"><div class="qe-text"><textarea v-model="tikuForm.content" maxlength="2000" placeholder="请输入题干内容(限制2000字符)"></textarea><textarea placeholder="请输入题干拼音"></textarea></div><div class="qe-score"><div>分值：<br><input type="number" min="0" v-model="tikuForm.score" value="1"><br><label>转语音<input type="checkbox"></label></div><div class="qe-presets"><button class="qe-primary" @click="tikuForm.score = 10">10</button><button class="qe-primary" @click="tikuForm.score = 15">15</button><button class="qe-primary" @click="tikuForm.score = 20">20</button></div></div></div>
+<label class="qe-upload"><b>↥</b>上传题干音频<input type="file" accept="audio/*"></label><button class="qe-primary qe-tts" type="button">♬ 文字转音频</button><label class="qe-upload qe-image"><b>＋</b>添加图片<input type="file" accept="image/*"></label></section>
+<div class="qe-optbar"><label class="qe-label">选项</label><label class="qe-toggle">共享选项<input type="checkbox"></label><button class="qe-primary" @click="tikuForm.options.push({text:'',pinyin:'',tts:false})">添加选项</button></div><table class="qe-options"><thead><tr><th>选项</th><th style="width:60%">选项文本</th><th>正确答案</th><th>是否转语音</th><th>操作</th></tr></thead><tbody><tr v-for="(option,i) in tikuForm.options" :key="i"><td>{{ String.fromCharCode(65+i) }}</td><td><div class="qe-opttext"><textarea v-model="option.text" placeholder="请输入选项文本"></textarea><textarea v-model="option.pinyin" placeholder="请输入选项拼音"></textarea><button type="button">＋</button></div></td><td><input :type="tikuForm.qtype === '多选题' ? 'checkbox' : 'radio'" name="qe-answer" :value="i" v-model="tikuForm.answer"></td><td><input type="checkbox" v-model="option.tts"></td><td><button class="qe-plain" @click="tikuForm.options.splice(i,1)" :disabled="tikuForm.options.length <= 2">删除</button></td></tr></tbody></table></div>
+<div class="qe-footer"><button class="qe-plain" @click="tikuEditVisible = false">取消</button><button class="qe-primary" @click="saveTiku">确定</button></div></div></div>
       </div>
 
       <!-- ================== 考点管理视图 ================== -->
@@ -521,9 +523,6 @@
               </template>
               <template v-else-if="column.dataIndex === 'scope'">
                 <span class="muted">{{ record.scope.join(' / ') }}</span>
-              </template>
-              <template v-else-if="column.dataIndex === 'pinned'">
-                <a-tag :color="record.pinned ? 'gold' : 'default'">{{ record.pinned ? '置顶' : '否' }}</a-tag>
               </template>
               <template v-else-if="column.dataIndex === 'tagCount'">
                 <a style="color:#1890ff; cursor:pointer;">{{ record.tagCount }}</a>
@@ -566,7 +565,7 @@
           v-model:visible="kaodianEditVisible"
           :title="kaodianEditing ? '编辑考点' : '新增考点'"
           :width="640"
-          :footer-style="{textAlign:'right'}"
+          :body-style="{paddingBottom: '80px'}"
         >
           <div class="form-section">
             <h3>基本信息</h3>
@@ -627,10 +626,11 @@
             <h3>备注（可选）</h3>
             <a-textarea v-model:value="kdForm.note" :rows="3" placeholder="用于描述考点的考查范围与难度，便于运营对齐" ></a-textarea>
           </div>
-          <template #footer>
+          <!-- Ant Design Vue 2 抽屉使用内容区内的固定底栏。 -->
+          <div class="kaodian-drawer-actions">
             <a-button @click="kaodianEditVisible = false">取消</a-button>
-            <a-button type="primary" @click="saveKaodian">保存</a-button>
-          </template>
+            <a-button type="primary" @click="saveKaodian">确认</a-button>
+          </div>
         </a-drawer>
 
       </div>
@@ -668,6 +668,21 @@
 </div>
 
 <script>
+// === vendor 加载自检：任一未定义时立刻报错，避免 Vue 模板静默渲染为 {{ ... }} 字面量 ===
+if (typeof Vue === "undefined" || typeof antd === "undefined" || typeof moment === "undefined") {
+  document.body.innerHTML =
+    '<div style="padding:40px;font:14px/1.6 -apple-system,Helvetica,sans-serif;color:#ff4d4f;background:#fff2f0">' +
+    '⚠️ vendor 脚本加载失败<br>' +
+    'Vue=' + (typeof Vue) + ', moment=' + (typeof moment) + ', antd=' + (typeof antd) +
+    '<br><br>可能原因：<br>' +
+    '1. ./vendor/ 目录里 4 个文件缺失（vue.global.prod.js / moment.min.js / antd.min.js / antd.min.css）<br>' +
+    '2. 浏览器对超大内联脚本静默拒绝执行 —— 已外链到 vendor/，但部署时未一起 push<br>' +
+    '3. 相对路径错乱（vendor 必须和 index.html 同级）<br><br>' +
+    '修复: 执行 <code>bash deploy.sh 考点管理</code> 重新部署。' +
+    '</div>';
+  throw new Error("vendor scripts failed to load");
+}
+
 const { createApp, ref, reactive, computed, watch, onMounted, nextTick } = Vue;
 
 const app = createApp({
@@ -788,26 +803,32 @@ const app = createApp({
     function openTikuEdit(row) {
       tikuEditing.value = row || null;
       Object.assign(tikuForm, row || { title: '', qtype: undefined, serial: '', scope: undefined, qcat: undefined, audit: undefined, content: '' });
+      Object.assign(tikuForm, { qtype: row?.qtype || '单选题', scope: row?.scope || '', qcat: row?.qcat || '拼音', audit: row?.audit || '审核通过', score: row?.score || 1, options: [{text:'',pinyin:'',tts:false},{text:'',pinyin:'',tts:false}], answer: [] });
+      kdEditSel.clear();
+      (row?.kaodian || []).forEach(k => kdEditSel.add(k.id));
       tikuEditVisible.value = true;
     }
     function saveTiku() {
+      if (!tikuForm.title.trim()) { $message.warning('请输入试题标题'); return; }
+      const data = { ...tikuForm, kaodian: [...kdEditSel].map(id => ({id, name:getKDName(id)})) };
+      if (tikuEditing.value) Object.assign(tikuEditing.value, data);
+      else tikuList.unshift({ ...data, id: Date.now(), tags: [], creator: '超级管理员', createdAt: new Date().toLocaleString('zh-CN') });
       $message.success(tikuEditing.value ? '已保存试题' : '已新增试题');
       tikuEditVisible.value = false;
     }
 
     // ==================== 考点管理视图 ====================
     const kaodianList = reactive([
-      { id: 1, name: '平翘舌', category:'拼音类', scope:['中学','老师端','学生端'], pinned:true, pinyinHint: 'zh/ch/sh/r 与 z/c/s 的发音辨析', tagCount: 6, questionCount: 326, status: 'on', creator: '超级管理员', createdAt: '2026-09-12 10:24:38' },
-      { id: 2, name: '前后鼻音', category:'拼音类', scope:['中学','老师端','学生端'], pinned:true, pinyinHint: 'an/en/in/un/ün 与 ang/eng/ing/ong', tagCount: 9, questionCount: 218, status: 'on', creator: '超级管理员', createdAt: '2026-09-08 14:02:11' },
-      { id: 3, name: '人名拼写规则', category:'拼写规则类', scope:['中学','老师端','学生端'], pinned:false, pinyinHint: '姓名拼写中的大小写、连字符、隔音符号', tagCount: 5, questionCount: 142, status: 'on', creator: '内容运营-小王', createdAt: '2026-09-05 09:33:50' },
-      { id: 4, name: '地名拼写规则', category:'拼写规则类', scope:['中学','老师端'], pinned:false, pinyinHint: '地名拼写，专名缩写、地理通名大小写', tagCount: 4, questionCount: 87, status: 'off', creator: '内容运营-小王', createdAt: '2026-08-30 16:48:25' },
-      { id: 5, name: '变调', category:'声调类', scope:['中学','老师端','学生端'], pinned:true, pinyinHint: '上声变调、一/不变调、叠字变调', tagCount: 7, questionCount: 198, status: 'on', creator: '超级管理员', createdAt: '2026-08-26 11:17:09' },
+      { id: 1, name: '平翘舌', category:'拼音类', scope:['中学','老师端','学生端'], pinyinHint: 'zh/ch/sh/r 与 z/c/s 的发音辨析', tagCount: 6, questionCount: 326, status: 'on', creator: '超级管理员', createdAt: '2026-09-12 10:24:38' },
+      { id: 2, name: '前后鼻音', category:'拼音类', scope:['中学','老师端','学生端'], pinyinHint: 'an/en/in/un/ün 与 ang/eng/ing/ong', tagCount: 9, questionCount: 218, status: 'on', creator: '超级管理员', createdAt: '2026-09-08 14:02:11' },
+      { id: 3, name: '人名拼写规则', category:'拼写规则类', scope:['中学','老师端','学生端'], pinyinHint: '姓名拼写中的大小写、连字符、隔音符号', tagCount: 5, questionCount: 142, status: 'on', creator: '内容运营-小王', createdAt: '2026-09-05 09:33:50' },
+      { id: 4, name: '地名拼写规则', category:'拼写规则类', scope:['中学','老师端'], pinyinHint: '地名拼写，专名缩写、地理通名大小写', tagCount: 4, questionCount: 87, status: 'off', creator: '内容运营-小王', createdAt: '2026-08-30 16:48:25' },
+      { id: 5, name: '变调', category:'声调类', scope:['中学','老师端','学生端'], pinyinHint: '上声变调、一/不变调、叠字变调', tagCount: 7, questionCount: 198, status: 'on', creator: '超级管理员', createdAt: '2026-08-26 11:17:09' },
     ]);
     const kaodianCols = [
       { title: '考点名称', dataIndex: 'name', width: 240 },
       { title: '分类', dataIndex: 'category', width: 100 },
       { title: '适用范围', dataIndex: 'scope', width: 150 },
-      { title: '置顶', dataIndex: 'pinned', width: 70, align: 'center' },
       { title: '关联标签', dataIndex: 'tagCount', width: 100, align: 'center' },
       { title: '关联题目', dataIndex: 'questionCount', width: 100, align: 'center' },
       { title: '状态', dataIndex: 'status', width: 80, align: 'center' },
@@ -833,8 +854,8 @@ const app = createApp({
     function openKaodianEdit(row) {
       kaodianEditing.value = row || null;
       Object.assign(kdForm, row ? {
-        name: row.name, statusOn: row.status === 'on', note: row.note || '', category: row.category, scope: row.scope, pinned: row.pinned,
-      } : { name: '', statusOn: true, note: '', category: '拼音类', scope: ['中学','老师端','学生端'], pinned: false });
+        name: row.name, statusOn: row.status === 'on', note: row.note || '', category: row.category, scope: row.scope,
+      } : { name: '', statusOn: true, note: '', category: '拼音类', scope: ['中学','老师端','学生端'] });
       selectedTags.clear();
       expanded.clear();
       if (row && row.tags) row.tags.forEach(t => {
@@ -962,6 +983,10 @@ const app = createApp({
     const kdPopTarget = ref('filter');
     const kdPopSelected = reactive(new Set());
     const kdFilterSel = reactive(new Set());
+    // 多选考点匹配任意一项；清空选择时恢复全部题目。
+    const filteredTikuList = computed(() => tikuList.filter(row =>
+      !kdFilterSel.size || row.kaodian.some(k => kdFilterSel.has(k.id))
+    ));
     const kdEditSel = reactive(new Set());
 
     const kdOptions = computed(() => kaodianList.map(k => ({
@@ -1005,7 +1030,7 @@ const app = createApp({
     return {
       menuGroups, toggleGroup, currentView, switchView, currentSurface,
       qTypeOpts, scopeOpts, creatorOpts, qCatOpts, auditOpts, tagOpts,
-      tikuFilter, tikuList, tikuCols, resetTikuFilter,
+      tikuFilter, tikuList, filteredTikuList, tikuCols, resetTikuFilter,
       tikuEditVisible, tikuEditing, tikuForm, openTikuEdit, saveTiku,
       kaodianList, kaodianCols, toggleKDStatus, confirmDelete, categoryOpts, scopeOpts2,
       kaodianEditVisible, kaodianEditing, kdForm, openKaodianEdit, saveKaodian,

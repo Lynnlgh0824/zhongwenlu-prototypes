@@ -526,11 +526,34 @@
     letter-spacing: 1px;
   }
 </style>
+<style>
+/* 添加试题：沿用原系统布局，红色区域标识考点新增需求。 */
+.qe-mask{position:fixed;inset:0;background:#0006;z-index:1000;display:flex;align-items:center;justify-content:center}
+.qe-dialog{width:900px;max-width:96vw;height:94vh;background:white;display:flex;flex-direction:column;color:#333;font-size:13px;box-shadow:0 12px 48px #0003}
+.qe-head{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #eee;flex-shrink:0}
+.qe-head button{border:0;background:none;color:#999;font-size:20px;cursor:pointer}
+.qe-body{padding:20px;overflow:auto;flex:1;min-height:0}
+.qe-tabs{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap}
+.qe-dialog button{cursor:pointer}.qe-tabs button{padding:7px 13px;border:0;background:#f5f5f5;color:#777;border-radius:2px}.qe-tabs button.active{background:#229ed0;color:white}
+.qe-meta{display:grid;grid-template-columns:2fr 1.6fr .7fr .7fr;gap:24px;margin-bottom:18px}
+.qe-dialog label.qe-label{display:block;font-size:15px;font-weight:600;margin-bottom:10px}
+.qe-dialog input:not([type=checkbox]):not([type=radio]):not([type=file]),.qe-dialog textarea,.qe-dialog select{border:1px solid #d9d9d9;border-radius:2px;padding:5px 9px;min-width:0;font:inherit;color:#666;background:white;box-sizing:border-box}
+.qe-dialog textarea{resize:vertical;height:29px;width:100%}.qe-dialog input::placeholder,.qe-dialog textarea::placeholder{color:#bbb;font-size:12px}
+.qe-meta select{width:100%}.qe-inline{display:flex;gap:6px;align-items:center}.qe-inline select{flex:1;min-width:0}.qe-inline input{width:54px}
+.qe-new{border:1px dashed #ff7875;background:#fff8f7;padding:12px;margin-bottom:20px}.qe-new label{color:#cf1322}.qe-badge{font-size:10px;color:white;background:#ff4d4f;padding:2px 5px;margin-right:6px;border-radius:3px}.qe-note{font-size:12px;color:#cf1322;margin:8px 0 0;line-height:1.7}
+.qe-section{margin-bottom:24px}.qe-text{width:59%;min-width:320px}.qe-titleline{display:flex;gap:7px;align-items:start}.qe-titleline textarea{flex:1}
+.qe-primary{background:#229ed0!important;border:1px solid #229ed0!important;color:#fff!important;padding:5px 12px;border-radius:2px;white-space:nowrap}.qe-plain{background:#fff;border:1px solid #d9d9d9;color:#888;padding:5px 12px;border-radius:2px}
+.qe-upload{display:flex;flex-direction:column;align-items:center;justify-content:center;width:170px;height:84px;border:1px dashed #ddd;background:#fafafa;margin:8px 0;cursor:pointer}.qe-upload b{font-size:32px;color:#40a9ff;font-weight:400}.qe-upload input{display:none}.qe-tts{width:170px;background:#268aff!important;border-color:#268aff!important}.qe-toggle{font-size:12px;color:#888;display:inline-flex;align-items:center;gap:6px;margin-left:14px}.qe-toggle input{appearance:none;width:32px;height:17px;background:#ccc;border-radius:12px;position:relative;cursor:pointer}.qe-toggle input:before{content:'';position:absolute;background:#fff;width:13px;height:13px;left:2px;top:2px;border-radius:50%}.qe-toggle input:checked{background:#229ed0}.qe-toggle input:checked:before{left:17px}
+.qe-stem{display:flex;justify-content:space-between;gap:20px}.qe-score{display:flex;gap:12px;color:#888;font-size:12px}.qe-score input[type=number]{width:72px}.qe-presets{display:flex;flex-direction:column;gap:5px}.qe-image{width:88px;height:88px;color:#888}.qe-image b{font-size:20px;color:#888}
+.qe-optbar{display:flex;align-items:center;margin-bottom:8px}.qe-optbar .qe-label{margin:0!important}.qe-optbar button{margin-left:auto}.qe-options{border-collapse:collapse;width:100%;font-size:12px;color:#777}.qe-options td,.qe-options th{border:1px solid #ccc;padding:7px;text-align:center;font-weight:400}.qe-options textarea{border:0;padding:3px;height:34px}.qe-options .qe-opttext{display:flex}.qe-options .qe-opttext textarea{width:46%;border-right:1px dashed #ddd}.qe-options .qe-opttext button{border:0;background:#fafafa;width:32px;color:#888}
+.qe-footer{display:flex;justify-content:flex-end;gap:8px;padding:12px 20px;border-top:1px solid #eee;flex-shrink:0;background:#fff}
+@media(max-width:700px){.qe-meta{grid-template-columns:1fr 1fr;gap:14px}.qe-text{min-width:0;width:74%}.qe-score{gap:4px}.qe-dialog{max-width:100vw;width:100vw;height:100vh}.qe-body{padding:14px}}
+</style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="logo"><i>中</i>中文路 · 运营后台</div>
+  <div class="logo"><i>中</i>港澳题库（后台）</div>
   <div class="bread">
     <span>在线试题管理</span>
     <span class="sep">/</span>
@@ -630,8 +653,8 @@
           <div class="picker-trigger" data-placeholder="选择考点" onclick="openKDPicker('filter', this)"></div>
         </div>
         <div class="field-actions">
-          <button class="btn primary">🔍 查询</button>
-          <button class="btn">重置</button>
+          <button class="btn primary" onclick="applyKDFilter()">🔍 查询</button>
+          <button class="btn" onclick="resetKDFilter()">重置</button>
         </div>
       </div>
     </div>
@@ -756,135 +779,21 @@
 
 <!-- ============ 新增/编辑试题弹窗 ============ -->
 <div class="modal-mask" id="addMask">
-  <div class="modal">
-    <div class="modal-hd">
-      <h3>添加试题</h3>
-      <span class="close" onclick="closeAdd()">×</span>
-    </div>
-    <div style="position:relative;background:#fff5f5;border-bottom:1px solid #ffa39e;padding:10px 24px;display:flex;align-items:center;gap:8px;flex-shrink:0;">
-      <span style="background:#ff4d4f;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:1px;flex-shrink:0;">NEW</span>
-      <span style="font-size:13px;color:#cf1322;line-height:1.5;">「<strong>考点</strong>」字段为本次新增内容。挂载的考点将出现在题目详情页，并可被「按考点筛选 / 统计」使用。</span>
-    </div>
-    <div class="modal-bd">
-      <!-- 题型 Tabs -->
-      <div class="qt-tabs">
-        <div class="qt-tab active">单选题</div>
-        <div class="qt-tab">多选题</div>
-        <div class="qt-tab">选词组句</div>
-        <div class="qt-tab">排句成段</div>
-        <div class="qt-tab">完形填空</div>
-        <div class="qt-tab">选词填空</div>
-      </div>
-
-      <!-- 顶部字段：适用范围 / 标签 / 考点 / 试题类型 / 审核状态 -->
-      <div class="form-row-tight">
-        <div class="field">
-          <label>适用范围</label>
-          <div class="select-wrap"><select class="select"><option>请选择</option></select></div>
-        </div>
-        <div class="field">
-          <label>标签</label>
-          <div class="select-wrap"><select class="select"><option>请选择标签</option></select></div>
-        </div>
-        <div class="field new-field" style="grid-column: span 2;">
-          <label>考点</label>
-          <div class="picker-trigger" id="kdPickerEdit" data-placeholder="选择考点（可多选）" onclick="openKDPicker('edit', this)"></div>
-          <div class="kd-stat">
-            <span>命中题目预估：<span class="num">487</span> 道</span>
-            <span class="muted">· 仅展示手工关联，不含自动聚合</span>
-          </div>
-        </div>
-        <div class="field">
-          <label>试题类型</label>
-          <div class="select-wrap"><select class="select"><option>请选择</option></select></div>
-        </div>
-        <div class="field">
-          <label>审核状态</label>
-          <div class="select-wrap"><select class="select"><option>审核通过</option></select></div>
-        </div>
-      </div>
-
-      <!-- 标题 -->
-      <div class="label-h"><span class="req">*</span>试题标题</div>
-      <div class="title-row">
-        <input class="input" placeholder="请输入标题内容(限制2000字符)" />
-        <button class="btn primary">新增小题</button>
-      </div>
-      <textarea class="textarea" placeholder="请输入语音原文" style="margin-bottom: 12px;"></textarea>
-
-      <div class="upload-zone" style="margin-bottom: 8px;">
-        <div class="up-icon">⇧</div>
-        <div class="up-ttl">上传整题音频</div>
-      </div>
-      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
-        <button class="tts-btn">🔊 文字转音频</button>
-        <div class="switch">
-          <span>是否重复播放</span>
-          <input type="checkbox" /><span class="track"></span>
-        </div>
-      </div>
-
-      <!-- 题干 -->
-      <div class="label-h"><span class="req">*</span>试题题干</div>
-      <textarea class="textarea" placeholder="请输入题干内容(限制2000字符)" style="margin-bottom: 8px;"></textarea>
-      <textarea class="textarea" placeholder="请输入题干拼音" style="margin-bottom: 12px;"></textarea>
-      <div class="upload-zone" style="margin-bottom: 8px;">
-        <div class="up-icon">⇧</div>
-        <div class="up-ttl">上传题干音频</div>
-      </div>
-      <div style="margin-bottom: 16px;">
-        <button class="tts-btn">🔊 文字转音频</button>
-      </div>
-      <div class="add-img-btn" style="margin-bottom: 24px;">＋ 添加图片</div>
-
-      <!-- 选项 -->
-      <div class="opt-bar">
-        <h4>选项</h4>
-        <div class="right">
-          <div class="switch">
-            <span>共享选项</span>
-            <input type="checkbox" /><span class="track"></span>
-          </div>
-          <button class="btn sm primary">＋ 添加选项</button>
-        </div>
-      </div>
-      <table class="opt-tbl">
-        <thead>
-          <tr>
-            <th>选项</th>
-            <th>选项文本</th>
-            <th>选项拼音</th>
-            <th style="width:90px;" class="text-c">正确答案</th>
-            <th style="width:90px;" class="text-c">是否转语音</th>
-            <th style="width:60px;" class="text-c">操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="opt-letter">A</td>
-            <td><input type="text" placeholder="请输入选项文本" /></td>
-            <td><input type="text" placeholder="请输入选项拼音" /></td>
-            <td class="text-c"><input type="radio" name="ans" /></td>
-            <td class="text-c"><input type="checkbox" /></td>
-            <td class="text-c"><span class="icon-btn">＋</span></td>
-          </tr>
-          <tr>
-            <td class="opt-letter">B</td>
-            <td><input type="text" placeholder="请输入选项文本" /></td>
-            <td><input type="text" placeholder="请输入选项拼音" /></td>
-            <td class="text-c"><input type="radio" name="ans" /></td>
-            <td class="text-c"><input type="checkbox" /></td>
-            <td class="text-c"><span class="icon-btn">＋</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="modal-ft">
-      <button class="btn" onclick="closeAdd()">取消</button>
-      <button class="btn primary" onclick="closeAdd()">确定</button>
-    </div>
-  </div>
-</div>
+<div class="qe-dialog" role="dialog" aria-modal="true" aria-label="添加试题">
+<div class="qe-head"><span>添加试题</span><button onclick="closeAdd()" aria-label="关闭添加试题">×</button></div>
+<div class="qe-body"><div class="qe-tabs"><button type="button" class="qt-tab active">单选题</button><button type="button" class="qt-tab ">多选题</button><button type="button" class="qt-tab ">选词组句</button><button type="button" class="qt-tab ">排句成段</button><button type="button" class="qt-tab ">完形填空</button><button type="button" class="qt-tab ">选词填空</button></div>
+<div class="qe-meta">
+<div><label class="qe-label">适用范围</label><div class="qe-inline"><select ><option value="">请选择</option><option>香港学校/P1</option><option>香港学校/P2</option><option>香港学校/P3</option></select><input placeholder="编号" ></div></div>
+<div><label class="qe-label">标签</label><select><option>请选择标签</option><option>拼音</option><option>词汇</option></select></div>
+<div><label class="qe-label">试题类型</label><select ><option>拼音</option><option>词汇</option><option>语法</option></select></div>
+<div><label class="qe-label">审核状态</label><select ><option>审核通过</option><option>待审核</option></select></div></div>
+<div class="qe-new"><label class="qe-label"><span class="qe-badge">NEW</span>考点</label><div class="picker-trigger" id="kdPickerEdit" data-placeholder="选择考点（可多选）" onclick="openKDPicker('edit', this)"></div><p class="qe-note">新增需求：支持搜索、多选考点；与标签独立配置。确定后保存题目与考点的关联，列表展示所选考点，并支持按考点筛选。取消不保存本次修改。</p></div>
+<section class="qe-section"><label class="qe-label">试题标题</label><div class="qe-text"><div class="qe-titleline"><textarea  maxlength="2000" placeholder="请输入标题内容(限制2000字符)"></textarea><button class="qe-primary" type="button">新增小题</button></div><textarea placeholder="请输入语音原文"></textarea></div>
+<label class="qe-upload"><b>↥</b>上传整题音频<input type="file" accept="audio/*"></label><button class="qe-primary qe-tts" type="button">♬ 文字转音频</button><label class="qe-toggle">是否重复播放<input type="checkbox"></label></section>
+<section class="qe-section"><label class="qe-label">试题题干</label><div class="qe-stem"><div class="qe-text"><textarea  maxlength="2000" placeholder="请输入题干内容(限制2000字符)"></textarea><textarea placeholder="请输入题干拼音"></textarea></div><div class="qe-score"><div>分值：<br><input type="number" min="0"  value="1"><br><label>转语音<input type="checkbox"></label></div><div class="qe-presets"><button class="qe-primary" onclick="this.closest('.qe-score').querySelector('input[type=number]').value=10">10</button><button class="qe-primary" onclick="this.closest('.qe-score').querySelector('input[type=number]').value=15">15</button><button class="qe-primary" onclick="this.closest('.qe-score').querySelector('input[type=number]').value=20">20</button></div></div></div>
+<label class="qe-upload"><b>↥</b>上传题干音频<input type="file" accept="audio/*"></label><button class="qe-primary qe-tts" type="button">♬ 文字转音频</button><label class="qe-upload qe-image"><b>＋</b>添加图片<input type="file" accept="image/*"></label></section>
+<div class="qe-optbar"><label class="qe-label">选项</label><label class="qe-toggle">共享选项<input type="checkbox"></label><button class="qe-primary" onclick="addQuestionOption()">添加选项</button></div><table class="qe-options"><thead><tr><th>选项</th><th style="width:60%">选项文本</th><th>正确答案</th><th>是否转语音</th><th>操作</th></tr></thead><tbody><tr><td>A</td><td><div class="qe-opttext"><textarea placeholder="请输入选项文本"></textarea><textarea placeholder="请输入选项拼音"></textarea><button type="button">＋</button></div></td><td><input type="radio" name="qe-answer"></td><td><input type="checkbox"></td><td></td></tr><tr><td>B</td><td><div class="qe-opttext"><textarea placeholder="请输入选项文本"></textarea><textarea placeholder="请输入选项拼音"></textarea><button type="button">＋</button></div></td><td><input type="radio" name="qe-answer"></td><td><input type="checkbox"></td><td></td></tr></tbody></table></div>
+<div class="qe-footer"><button class="qe-plain" onclick="closeAdd()">取消</button><button class="qe-primary" onclick="saveQuestion()">确定</button></div></div></div>
 
 <!-- ============ 考点选择弹窗 ============ -->
 <div class="pop-mask" id="kdPopMask">
@@ -926,6 +835,7 @@ const kaodianList = [
 let kdPopSelected = new Set();
 let kdPopTarget = null;       // 'filter' | 'edit'
 let kdPopTriggerEl = null;
+let kdFilterConfirmed = new Set();
 let kdPopConfirmed = new Set(); // 上次已选
 
 function showToast(msg) {
@@ -939,7 +849,7 @@ function showToast(msg) {
   }, 1500);
 }
 
-function renderKDTrigger(el, ids) {
+function renderKDTrigger(el, ids, target) {
   if (!ids.size) {
     el.innerHTML = '';
     el.removeAttribute('data-filled');
@@ -948,26 +858,27 @@ function renderKDTrigger(el, ids) {
   el.setAttribute('data-filled', '1');
   el.innerHTML = [...ids].map(id => {
     const k = kaodianList.find(x => x.id === id);
-    return `<span class="ptag">${k.name}<i onclick="event.stopPropagation();removeKDFromTrigger('${kdPopTarget}','${id}',event)">×</i></span>`;
+    return `<span class="ptag">${k.name}<i onclick="event.stopPropagation();removeKDFromTrigger('${target}','${id}',event)">×</i></span>`;
   }).join('');
 }
 
 function removeKDFromTrigger(target, id, e) {
-  if (target === 'edit') kdPopConfirmed.delete(+id);
+  (target === 'edit' ? kdPopConfirmed : kdFilterConfirmed).delete(+id);
+  applyKDFilter();
   renderPickerTriggers();
 }
 
 function renderPickerTriggers() {
   // filter
-  renderKDTrigger(document.querySelector('[data-placeholder="选择考点"]'), new Set());
+  renderKDTrigger(document.querySelector('[data-placeholder="选择考点"]'), kdFilterConfirmed, 'filter');
   // edit
-  renderKDTrigger(document.getElementById('kdPickerEdit'), kdPopConfirmed);
+  renderKDTrigger(document.getElementById('kdPickerEdit'), kdPopConfirmed, 'edit');
 }
 
 function openKDPicker(target, el) {
   kdPopTarget = target;
   kdPopTriggerEl = el;
-  kdPopSelected = new Set(target === 'edit' ? kdPopConfirmed : []);
+  kdPopSelected = new Set(target === 'edit' ? kdPopConfirmed : kdFilterConfirmed);
   renderKDList(kdPopSelected);
   document.getElementById('kdPopMask').classList.add('show');
 }
@@ -1013,20 +924,78 @@ function confirmKDPop() {
     kdPopConfirmed = new Set(kdPopSelected);
     renderPickerTriggers();
   } else {
-    // filter 仅展示即可
-    if (kdPopTriggerEl) {
-      renderKDTrigger(kdPopTriggerEl, kdPopSelected);
-    }
+    kdFilterConfirmed = new Set(kdPopSelected);
+    renderPickerTriggers();
+    applyKDFilter();
   }
   closeKDPicker();
   showToast(kdPopTarget === 'edit' ? '已保存考点关联' : '已应用筛选');
 }
 
+// 根据每行实际挂载的考点筛选，多选时匹配任意一个考点。
+function applyKDFilter() {
+  const tbody = document.querySelector('table.zl tbody');
+  const names = new Set(kaodianList.filter(k => kdFilterConfirmed.has(k.id)).map(k => k.name));
+  let count = 0;
+  tbody.querySelectorAll('tr:not(.kd-empty-row)').forEach(row => {
+    const matches = !names.size || [...row.cells[7].querySelectorAll('.tag')]
+      .some(tag => names.has(tag.textContent.trim()));
+    row.hidden = !matches;
+    if (matches) count++;
+  });
+  let empty = tbody.querySelector('.kd-empty-row');
+  if (!empty) {
+    empty = document.createElement('tr');
+    empty.className = 'kd-empty-row';
+    empty.innerHTML = '<td colspan="11" style="text-align:center;padding:32px;color:#8c8c8c;">暂无符合条件的题目</td>';
+    tbody.appendChild(empty);
+  }
+  empty.hidden = count > 0;
+  document.querySelector('.pager strong').textContent = count;
+}
+function resetKDFilter() {
+  kdFilterConfirmed.clear();
+  renderPickerTriggers();
+  applyKDFilter();
+}
+
+function addQuestionOption() {
+  const body = document.querySelector('#addMask .qe-options tbody');
+  const row = body.rows[0].cloneNode(true);
+  row.cells[0].textContent = String.fromCharCode(65 + body.rows.length);
+  row.querySelectorAll('textarea').forEach(el => el.value = '');
+  row.querySelectorAll('input').forEach(el => el.checked = false);
+  body.appendChild(row);
+}
+let questionKDSnapshot = new Set();
+function saveQuestion() {
+  const modal = document.getElementById('addMask');
+  const title = modal.querySelector('textarea').value.trim();
+  if (!title) { showToast('请输入试题标题'); return; }
+  const row = document.querySelector('table.zl tbody tr:not(.kd-empty-row)').cloneNode(true);
+  row.hidden = false;
+  row.cells[0].querySelector('a').textContent = title;
+  row.cells[3].textContent = modal.querySelector('.qt-tab.active').textContent;
+  row.cells[4].textContent = modal.querySelector('input[type=number]').value;
+  row.cells[5].textContent = modal.querySelector('.qe-meta select').value || '—';
+  row.cells[7].replaceChildren();
+  kaodianList.filter(k => kdPopConfirmed.has(k.id)).forEach(k => {
+    const tag = document.createElement('span'); tag.className = 'tag purple'; tag.textContent = k.name;
+    row.cells[7].appendChild(tag);
+  });
+  row.cells[10].textContent = new Date().toLocaleString('zh-CN');
+  document.querySelector('table.zl tbody').prepend(row);
+  questionKDSnapshot = new Set(kdPopConfirmed);
+  closeAdd(); applyKDFilter(); showToast('已保存试题与考点关联');
+}
 function openAdd() {
+  questionKDSnapshot = new Set(kdPopConfirmed);
   document.getElementById('addMask').classList.add('show');
   renderPickerTriggers();
 }
 function closeAdd() {
+  kdPopConfirmed = new Set(questionKDSnapshot);
+  renderPickerTriggers();
   document.getElementById('addMask').classList.remove('show');
 }
 
