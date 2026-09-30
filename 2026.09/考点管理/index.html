@@ -497,7 +497,7 @@
               考点列表
               <span class="muted" style="font-weight:normal;">共 {{ kaodianList.length }} 个</span>
             </h2>
-            <div style="display:flex;gap:8px;"><a-button @click="batchAssociate">⚙ 批量关联题目</a-button><a-button type="primary" @click="openKaodianEdit()">＋ 新增考点</a-button></div>
+            <div style="display:flex;gap:8px;"><a-button type="primary" @click="openKaodianEdit()">＋ 新增考点</a-button></div>
           </div>
 
           <!-- 表格 -->
@@ -829,7 +829,6 @@ const app = createApp({
     const kdForm = reactive({ name: '', statusOn: true, note: '' });
     const categoryOpts = [{value:'拼音类',label:'拼音类'},{value:'声调类',label:'声调类'},{value:'拼写规则类',label:'拼写规则类'}];
     const scopeOpts2 = [{value:'中学',label:'中学'},{value:'小学',label:'小学'},{value:'老师端',label:'老师端'},{value:'学生端',label:'学生端'}];
-    function batchAssociate(){ $message.success('批量关联任务已创建，将自动匹配 9000+ 道题目'); }
     function openKaodianEdit(row) {
       kaodianEditing.value = row || null;
       Object.assign(kdForm, row ? {
@@ -1007,7 +1006,7 @@ const app = createApp({
       qTypeOpts, scopeOpts, creatorOpts, qCatOpts, auditOpts, tagOpts,
       tikuFilter, tikuList, tikuCols, resetTikuFilter,
       tikuEditVisible, tikuEditing, tikuForm, openTikuEdit, saveTiku,
-      kaodianList, kaodianCols, toggleKDStatus, confirmDelete, batchAssociate, categoryOpts, scopeOpts2,
+      kaodianList, kaodianCols, toggleKDStatus, confirmDelete, categoryOpts, scopeOpts2,
       kaodianEditVisible, kaodianEditing, kdForm, openKaodianEdit, saveKaodian,
       tagKw, expanded, selectedTags, tagTreeRendered,
       renderTree, toggleExpand, toggleSel, expandAll, selectAllInScope,
