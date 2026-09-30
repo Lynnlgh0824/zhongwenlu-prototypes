@@ -68,6 +68,9 @@
     padding: 0 24px; height: 56px; display: flex; align-items: center;
     box-shadow: 0 1px 2px rgba(0,0,0,0.04);
   }
+  /* 隐藏长面包屑 + 账号胶囊（精简顶栏） */
+  .topbar .bread,
+  .topbar .right .user-pill { display: none !important; }
   .topbar .logo {
     font-size: 16px; font-weight: 600; color: #111827;
     display: flex; align-items: center; gap: 8px;
@@ -288,7 +291,7 @@
     <div class="logo"><i>中</i>中文路 · 运营后台</div>
     <div class="bread">
       在线试题管理 /
-      <span class="crumb-cur">{{ currentView === 'tiku' ? '港澳题库' : '考点管理' }}</span>
+      <span class="crumb-cur">{{ currentView === 'kaodian' ? '考点管理' : '港澳题库' }}</span>
     </div>
     <div class="right">
       <div class="user-pill"><span class="dot"></span>📍 中国香港/CN HK</div>
@@ -683,6 +686,7 @@ const app = createApp({
       { title: '在线网校', icon: '🎓' },
       { title: 'HKPSC', icon: '📋' },
       { title: '在线试题管理', icon: '📝', open: true, subitems: [
+        { label: '考点管理', view: 'kaodian', isNew: true },
         { label: '港澳题库', view: 'tiku', isNew: true },
         { label: '港澳试卷' },
         { label: '题库管理' },
@@ -691,7 +695,6 @@ const app = createApp({
         { label: '测试报告' },
         { label: 'HSKK 题目列表' },
         { label: '线下水平测试' },
-        { label: '考点管理', view: 'kaodian', isNew: true },
       ]}
     ]);
     function toggleGroup(i) {
@@ -699,7 +702,7 @@ const app = createApp({
     }
 
     // ==================== 视图切换 ====================
-    const currentView = ref('tiku');
+    const currentView = ref('kaodian');
     const currentSurface = ref('backend');
     function switchView(v) { currentView.value = v; }
 
