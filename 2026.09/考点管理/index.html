@@ -577,13 +577,7 @@
                 <label>状态</label>
                 <a-switch v-model:checked="kdForm.statusOn" checked-children="启用" un-checked-children="停用" />
               </div>
-              <div class="field"><label>考点分类</label><a-select v-model:value="kdForm.category" :options="categoryOpts" /></div>
               <div class="field"><label>适用范围</label><a-select v-model:value="kdForm.scope" mode="multiple" :options="scopeOpts2" /></div>
-              <div class="field"><label>展示配置</label><a-checkbox v-model:checked="kdForm.pinned">筛选区置顶</a-checkbox></div>
-              <div class="field" style="grid-column: span 4;">
-                <label>备注（可选）</label>
-                <a-textarea v-model:value="kdForm.note" :rows="3" placeholder="用于描述考点的考查范围与难度，便于运营对齐" />
-              </div>
             </div>
           </div>
 
@@ -627,6 +621,11 @@
             </div>
           </div>
 
+          <template #footer>
+          <div class="form-section">
+            <h3>备注（可选）</h3>
+            <a-textarea v-model:value="kdForm.note" :rows="3" placeholder="用于描述考点的考查范围与难度，便于运营对齐" />
+          </div>
           <template #footer>
             <a-button @click="kaodianEditVisible = false">取消</a-button>
             <a-button type="primary" @click="saveKaodian">保存</a-button>
